@@ -3,20 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://b2esubjm3asicapralxxt.ondigitalocean.app https://fonts.gstatic.com; script-src 'self' https://b2esubjm3asicapralxxt.ondigitalocean.app; style-src 'self' https://fonts.googleapis.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://b2esubjm3asicapralxxt.ondigitalocean.app https://fonts.gstatic.com; script-src 'self' https://b2esubjm3asicapralxxt.ondigitalocean.app; style-src 'self' https://fonts.googleapis.com; connect-src 'self' https://b2esubjm3asicapralxxt.ondigitalocean.app;">
     <title>Chatbot App</title>
+    <style>
+        #chatbox { border: 1px solid #031B4E; padding: 10px; margin: 10px; max-width: 500px; }
+        #input { width: 80%; padding: 5px; }
+        #send { padding: 5px 10px; background: #0061EB; color: white; border: none; }
+    </style>
 </head>
 <body>
-    <script async
-            src="https://b2esubjm3asicapralxxt.ondigitalocean.app/static/chatbot/widget.js"
-            data-agent-id="e79d4d7-5dba-11f0-bfb4-4e913e2dde4"
-            data-chatbot-id="CQ0wMuy2sh_kr5zG2aChCxTjjRS9uju"
-            data-name="agent-07092025-Chatbot"
-            data-primary-color="#031B4E"
-            data-secondary-color="#E5E8ED"
-            data-button-background-color="#0061EB"
-            data-starting-message="Hello! How can I help you today?"
-            data-logo="/static/chatbot/icons/default-agent.svg">
+    <div id="chatbox"></div>
+    <input type="text" id="input" placeholder="Type your message...">
+    <button id="send">Send</button>
+
+    <script>
+        const chatbox = document.getElementById('chatbox');
+        const input = document.getElementById('input');
+        const sendButton = document.getElementById('send');
+        const accessKey = '<P0XwW3BOnjN6NqpvtHTssb46j34N9WP1>'; // Replace with your access key
+        const endpoint = 'https://b2esubjm3asicapralxxt.ondigitalocean.app/api/v1/chat/completions';
+
+        sendButton.addEventListener('click', async () => {
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Display user message
+            chatbox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+            input.value = '';
+
+            // Send to endpoint
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessKey}`
+                },
+                body: JSON.stringify({
+                    messages: [{ role: 'user', content: message }],
+                    stream: false,
+                    include_retrieval_info: true // Optional, per OpenAPI
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                chatbox.innerHTML += `<p><strong>Bot:</strong> ${data.choices[0].message.content}</p>`;
+            } else {
+                chatbox.innerHTML += `<p><strong>Error:</strong> Failed to get response</p>`;
+            }
+            chatbox.scrollTop = chatbox.scrollHeight;
+        });
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendButton.click();
+        });
     </script>
 </body>
 </html>
