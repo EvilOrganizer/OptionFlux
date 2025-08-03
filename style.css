@@ -1,0 +1,4 @@
+#chatbox { border: 1px solid #031B4E; padding: 10px; margin: 10px; max-width: 500px; }
+#input { width: 80%; padding: 5px; }
+#send { padding: 5px 10px; background: #0061EB; color: white; border: none; }
+#fallback { margin: 10px; font-weight: bold; }
